@@ -1,0 +1,55 @@
+#ifndef _YANJUN_PARSER_H_
+#define _YANJUN_PARSER_H_
+
+#include <stdio.h>
+#include <string.h>
+
+#include "YYSTYPE.h"
+#include "Limits.h"
+
+struct StackEntry
+{
+	StackEntry(){state=-1;memset(&val,0,sizeof(YYSTYPE));}
+	StackEntry(int s):state(s){memset(&val,0,sizeof(YYSTYPE));}
+	StackEntry(int s,YYSTYPE v):state(s),val(v){}
+	int state;
+	YYSTYPE val;
+};
+
+class Stack
+{
+public:
+	Stack();
+	~Stack();
+	bool isEmpty();
+	bool isFull();
+	void init();
+	StackEntry& getAt(int n);
+	int top();//top position, not value
+	void pop();
+	bool push(const StackEntry& x);
+	const StackEntry& peek();
+private:
+	StackEntry element[PARSESTACK_SIZE];
+	int _top;
+};
+
+class Parser
+{
+private:
+	Stack sstack;
+	
+	int (*yylex)();
+	void handleSematicAction(int rnum);
+		
+public:	
+	YYSTYPE yylval;
+	
+	Parser(int (*lex)()):yylex(lex){}
+	void parseerror(char*);
+	bool yyparse(char* symbols);
+	
+	/* add other methods here */
+};
+
+#endif
